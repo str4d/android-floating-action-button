@@ -26,13 +26,14 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class FloatingActionButton extends ImageButton {
+public class FloatingActionButton extends ImageButton implements Animatable {
 
   public static final int SIZE_NORMAL = 0;
   public static final int SIZE_MINI = 1;
@@ -57,8 +58,11 @@ public class FloatingActionButton extends ImageButton {
   private int mDrawableSize;
   boolean mStrokeVisible;
 
+  private boolean mHidden;
+
   public FloatingActionButton(Context context) {
     this(context, null);
+    init();
   }
 
   public FloatingActionButton(Context context, AttributeSet attrs) {
@@ -71,7 +75,12 @@ public class FloatingActionButton extends ImageButton {
     init(context, attrs);
   }
 
+  private void init() {
+      mHidden = false;
+  }
+
   void init(Context context, AttributeSet attributeSet) {
+    init();
     TypedArray attr = context.obtainStyledAttributes(attributeSet, R.styleable.FloatingActionButton, 0, 0);
     mColorNormal = attr.getColor(R.styleable.FloatingActionButton_fab_colorNormal, getColor(R.color.default_normal));
     mColorPressed = attr.getColor(R.styleable.FloatingActionButton_fab_colorPressed, getColor(R.color.default_pressed));
@@ -280,7 +289,7 @@ public class FloatingActionButton extends ImageButton {
     StateListDrawable drawable = new StateListDrawable();
     drawable.addState(new int[] { -android.R.attr.state_enabled }, createCircleDrawable(mColorDisabled, strokeWidth));
     drawable.addState(new int[] { android.R.attr.state_pressed }, createCircleDrawable(mColorPressed, strokeWidth));
-    drawable.addState(new int[] { }, createCircleDrawable(mColorNormal, strokeWidth));
+    drawable.addState(new int[]{}, createCircleDrawable(mColorNormal, strokeWidth));
     return drawable;
   }
 
@@ -426,4 +435,74 @@ public class FloatingActionButton extends ImageButton {
 
     super.setVisibility(visibility);
   }
+
+  @Override
+  public void setHidden(boolean hidden) {
+    mHidden = hidden;
+  }
+
+  @Override
+  public boolean isHidden() {
+    return mHidden;
+  }
+
+  /**
+   * Show the Floating Action Button with animation.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   */
+  public void show() {
+      show(true);
+  }
+
+  /**
+   * Hide the Floating Action Button with animation.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   */
+  public void hide() {
+      hide(true);
+  }
+
+  /**
+   * Show the Floating Action Button.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   *
+   * @param animate if <code>true</code> makes animation
+   */
+  public void show(boolean animate) {
+      toggle(true, animate, false);
+  }
+
+  /**
+   * Hide the Floating Action Button.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   *
+   * @param animate if <code>true</code> makes animation
+   */
+  public void hide(boolean animate) {
+    toggle(false, animate, false);
+  }
+
+  /**
+   * Toggle the Floating Action Button.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   *
+   * @param visible if <code>true</code> make visible
+   * @param animate if <code>true</code> makes animation
+   * @param force   if <code>true</code> force toggle
+   */
+  public void toggle(final boolean visible, final boolean animate, boolean force) {
+    AnimateUtil.toggle(this, visible, animate, force);
+  }
+
+  @Override
+  public View getView() {
+    return this;
+  }
+
+
 }

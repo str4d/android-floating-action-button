@@ -27,7 +27,7 @@ import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
 
-public class FloatingActionsMenu extends ViewGroup {
+public class FloatingActionsMenu extends ViewGroup implements Animatable {
   public static final int EXPAND_UP = 0;
   public static final int EXPAND_DOWN = 1;
   public static final int EXPAND_LEFT = 2;
@@ -67,6 +67,8 @@ public class FloatingActionsMenu extends ViewGroup {
 
   private OnFloatingActionsMenuUpdateListener mListener;
 
+  private boolean mHidden;
+
   public interface OnFloatingActionsMenuUpdateListener {
     void onMenuExpanded();
     void onMenuCollapsed();
@@ -74,6 +76,7 @@ public class FloatingActionsMenu extends ViewGroup {
 
   public FloatingActionsMenu(Context context) {
     this(context, null);
+    init();
   }
 
   public FloatingActionsMenu(Context context, AttributeSet attrs) {
@@ -86,7 +89,12 @@ public class FloatingActionsMenu extends ViewGroup {
     init(context, attrs);
   }
 
+  private void init() {
+    mHidden = false;
+  }
+
   private void init(Context context, AttributeSet attributeSet) {
+    init();
     mButtonSpacing = (int) (getResources().getDimension(R.dimen.fab_actions_spacing) - getResources().getDimension(R.dimen.fab_shadow_radius) - getResources().getDimension(R.dimen.fab_shadow_offset));
     mLabelsMargin = getResources().getDimensionPixelSize(R.dimen.fab_labels_margin);
     mLabelsVerticalOffset = getResources().getDimensionPixelSize(R.dimen.fab_shadow_offset);
@@ -642,4 +650,73 @@ public class FloatingActionsMenu extends ViewGroup {
       }
     };
   }
+
+  @Override
+  public void setHidden(boolean hidden) {
+    mHidden = hidden;
+  }
+
+  @Override
+  public boolean isHidden() {
+    return mHidden;
+  }
+
+  /**
+   * Show the Floating Action Button with animation.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   */
+  public void show() {
+    show(true);
+  }
+
+  /**
+   * Hide the Floating Action Button with animation.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   */
+  public void hide() {
+    hide(true);
+  }
+
+  /**
+   * Show the Floating Action Button.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   *
+   * @param animate if <code>true</code> makes animation
+   */
+  public void show(boolean animate) {
+    toggle(true, animate, false);
+  }
+
+  /**
+   * Hide the Floating Action Button.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   *
+   * @param animate if <code>true</code> makes animation
+   */
+  public void hide(boolean animate) {
+    toggle(false, animate, false);
+  }
+
+  /**
+   * Toggle the Floating Action Button.<br><br>
+   * Added by Douglas Junior http://github.com/douglasjunior <br>
+   * Based on https://github.com/makovkastar/FloatingActionButton
+   *
+   * @param visible if <code>true</code> make visible
+   * @param animate if <code>true</code> makes animation
+   * @param force   if <code>true</code> force toggle
+   */
+  public void toggle(final boolean visible, final boolean animate, boolean force) {
+    AnimateUtil.toggle(this, visible, animate, force);
+  }
+
+  @Override
+  public View getView() {
+    return this;
+  }
+
 }
